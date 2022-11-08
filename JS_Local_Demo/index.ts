@@ -1,5 +1,6 @@
 // import DeviceDetector from "https://cdn.skypack.dev/device-detector-js@2.2.10";
-import DeviceDetector from "device-detector-js";
+// import DeviceDetector from "device-detector-js";
+import DeviceDetector = require("device-detector-js");
 
 console.log("hello from script");
 
