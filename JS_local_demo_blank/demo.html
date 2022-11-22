@@ -4,8 +4,6 @@
 <head>
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"
     crossorigin="anonymous"></script>
 </head>
@@ -22,20 +20,26 @@
     const canvasElement = document.getElementsByClassName('output_canvas')[0];
     const canvasCtx = canvasElement.getContext('2d');
 
+    let videoSource;
+
     function onResults(results) {
       canvasCtx.save();
       canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.filter = 'blur(15px)';
       canvasCtx.drawImage(results.segmentationMask, 0, 0,
         canvasElement.width, canvasElement.height);
 
       // Only overwrite existing pixels.
       canvasCtx.globalCompositeOperation = 'source-out';
-      const backgroundImage = new Image(640, 360);
-      backgroundImage.src = "background.jpg";
-      canvasCtx.drawImage(backgroundImage, 0, 0, canvasElement.width, canvasElement.height);
+
+      // const backgroundImage = new Image(640, 360);
+      // backgroundImage.src = "background.jpg";
+      // canvasCtx.drawImage(backgroundImage, 0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
       // Only overwrite missing pixels.
       canvasCtx.globalCompositeOperation = 'destination-atop';
+      canvasCtx.filter = "none";
       canvasCtx.drawImage(
         results.image, 0, 0, canvasElement.width, canvasElement.height
       );
@@ -54,6 +58,7 @@
 
     const camera = new Camera(videoElement, {
       onFrame: async () => {
+
         await selfieSegmentation.send({ image: videoElement });
       },
       width: 640,
